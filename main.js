@@ -3,50 +3,45 @@ const EMPTY_HEART = '♡'
 const FULL_HEART = '♥'
 
 // Your JavaScript code goes here!
-document.addEventListener('DOMContentLoaded', function() {
-  const errorModal = document.getElementById('modal');
+function makeItWork() {
+  const ul = document.querySelector("ul")
+  const modal = document.getElementById("modal")
   const errorMessage = document.getElementById('modal-message');
-
-  errorModal.classList.add('hidden'); // Hide error modal initially
-
-  function showError(message) {
-    errorMessage.innerText = message;
-    errorModal.classList.remove('hidden'); // Display error modal
-    setTimeout(function() {
-      errorModal.classList.add('hidden'); // Hide error modal after 3 seconds
-    }, 3000);
-  }
-
-  function handleHeartClick(event) {
-    const heart = event.target;
-    if (heart.classList.contains('like-glyph')) {
-      mimicServerCall() // Simulate server call
-        .then(function(response) {
-          heart.innerText = FULL_HEART; // Change heart to full
-          heart.classList.add('activated-heart'); // Make heart red
+  modal.classList.add("hidden");
+  const like = document.querySelectorAll(".like-glyph");
+  console.log(ul);
+  like.forEach((heart) => {
+    heart.addEventListener("click", function () {
+      console.log(heart)
+      mimicServerCall()
+        .then(res => res)
+        .catch((e) => {
+          modal.classList.remove("hidden");
+          errorMessage.textContent = e;
+          setTimeout(() => modal.classList.add("hidden"), 3000);
         })
-        .catch(function(error) {
-          showError(error); // Display error message
-        });
-    } else if (heart.classList.contains('activated-heart')) {
-      heart.innerText = EMPTY_HEART; // Change heart back to empty
-      heart.classList.remove('activated-heart'); // Remove red color
-    }
-  }
 
-  const hearts = document.querySelectorAll('.like-glyph');
-  hearts.forEach(function(heart) {
-    heart.addEventListener('click', handleHeartClick);
-  });
-});
+
+      if (heart.innerHTML == EMPTY_HEART) {
+        heart.innerHTML = FULL_HEART;
+        heart.classList.add("activated-heart");
+      }
+      else if (heart.innerHTML == FULL_HEART) {
+        heart.classList.remove("activated-heart")
+        heart.innerHTML = EMPTY_HEART;
+      }
+    }  )
+  })
+}
+makeItWork()
 
 //------------------------------------------------------------------------------
 // Don't change the code below: this function mocks the server response
 //------------------------------------------------------------------------------
 
-function mimicServerCall(url="http://mimicServer.example.com", config={}) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
+function mimicServerCall(url = "http://mimicServer.example.com", config = {}) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
       let isRandomFailure = Math.random() < .2
       if (isRandomFailure) {
         reject("Random server error. Try again.");
